@@ -1,6 +1,6 @@
 this is a backend project used to authenticate users while using the app.it makes sure that only an authorized user can access the data or functionality of app
 tech stack used:
-mern satck
+mern stack
 
 
 steps to satrt the project
