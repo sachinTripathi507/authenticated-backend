@@ -1,9 +1,11 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 import { User } from "../model/usermodel.js";
+import { generatetoken } from "../middleware/auth.js";
+
 
 const saltRounds = 10;
-const JWT_SECRET_KEY= "top secret";
+
 export const usersignup = async (req, res) => {
   const { name, number, password } = req.body;
 
@@ -21,13 +23,14 @@ export const usersignup = async (req, res) => {
   //  console.log(name,number);
   try {
     const newuser = await user.save();
-
-    const data= {
-      id: newuser._id,
+    // console.log(newuser);
+    const data = {
+      id: newuser.id,
     }
-
-const authtoken= jwt.sign(data,JWT_SECRET_KEY,{expiresIn:'1h'});
-    return res.json(`user ${newuser.name} registered`).cookie(authtoken);
+    const token = generatetoken(data);
+    // console.log(token);
+    res.cookie('token', token, { httpOnly: true });
+    return res.status(200).json("user created");
   } catch (error) {
     return error;
   }
@@ -44,7 +47,11 @@ export const userlogin = async (req, res) => {
       const iscorrectpassword = await bcrypt.compare(password, isExist.password);
       // console.log(iscorrectpassword); //for testing
       if (iscorrectpassword) {
-
+        const data = {
+          id: isExist.id,
+        }
+        const token = generatetoken({ id: data });
+        res.cookie('Token', token, { httpOnly: true, maxAge: 360000 });
         return res.status(200).json(`${name} logged in sucessfully!`);
       }
       else {
@@ -62,7 +69,7 @@ export const showuser = async (req, res) => {
     const usersdata = await User.find();
     return res.json(usersdata)
   } catch (error) {
-return res.status(500).json(error);
+    return res.status(500).json(error);
   }
 
 }
