@@ -29,7 +29,7 @@ export const usersignup = async (req, res) => {
     }
     const token = generatetoken(data);
     // console.log(token);
-    res.cookie('token', token, { httpOnly: true });
+    res.cookie({name:'token',value: token,  httpOnly: true, maxAge: 360000 });
     return res.status(200).json("user created");
   } catch (error) {
     return error;
@@ -51,7 +51,7 @@ export const userlogin = async (req, res) => {
           id: isExist.id,
         }
         const token = generatetoken({ id: data });
-        res.cookie('Token', token, { httpOnly: true, maxAge: 360000 });
+        res.cookie('Token', token,  {httpOnly: true, maxAge: 360000} );
         return res.status(200).json(`${name} logged in sucessfully!`);
       }
       else {

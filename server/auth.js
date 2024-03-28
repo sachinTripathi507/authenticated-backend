@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET_KEY } from "./middleware/auth.js";
 export const authUser = async (req, res) => {
-    const authorization = req.headers.authorization
-    if(!authorization) return res.status(401).json({ isauth: false });
+    const authorization = req.cookies
+    console.log(authorization);
+    if(!authorization) return res.status(401).json({ isauth: false, response: "from header" });
 
     // Extract the jwt token from the request headers
     const token = req.headers['authorization'].split(' ')[1];
@@ -16,7 +17,7 @@ export const authUser = async (req, res) => {
             return res.status(200).json({isauth:true});
         }
         else{
-            return res.json({isauth:false});
+            return res.json({isauth:false, response:"from verify"});
         }
         // Attach user information to the request object
         // req.user = decoded
